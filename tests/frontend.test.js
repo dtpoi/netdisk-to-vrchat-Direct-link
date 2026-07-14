@@ -17,6 +17,10 @@ test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
   assert.match(css, /data:image\/svg\+xml/);
   assert.match(css, /--paper:\s*#f4f4f0;/);
   assert.doesNotMatch(css, /#ead7ee/i);
+  assert.doesNotMatch(css, /#cbc4f8/i);
+  assert.match(css, /rgba\(244, 244, 240, 0\.86\)/);
+  assert.doesNotMatch(css, /203, 196, 248|245, 186, 191/);
+  assert.doesNotMatch(css, /%23(?:ff635d|00c0c3|ffe48f)/i);
   assert.doesNotMatch(css, /cho-kaguyahime\.com\/assets/i);
 });
 

@@ -30,7 +30,7 @@
   --font-sans: "Alibaba Health Font 2.0", "M PLUS 1p", "Noto Sans SC",
     "PingFang SC", "Microsoft YaHei", sans-serif;
   font-family: var(--font-sans);
-  background: #cbc4f8;
+  background: #f4f4f0;
   color: var(--ink);
 }
 
@@ -47,10 +47,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: #cbc4f8;
+  background-color: #f4f4f0;
   background-image:
-    linear-gradient(180deg, rgba(203, 196, 248, 0.8) 0%, rgba(245, 186, 191, 0.9) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='77' height='133' viewBox='0 0 77 133'%3E%3Cpath d='M38.5 0 77 66.5H0Z' fill='%23ffffff' fill-opacity='.26'/%3E%3Cpath d='M0 66.5h77L38.5 133Z' fill='%23ff635d' fill-opacity='.12'/%3E%3Cpath d='M0 0h38.5L0 66.5Z' fill='%2300c0c3' fill-opacity='.10'/%3E%3Cpath d='M77 0v66.5L38.5 0Z' fill='%23ffe48f' fill-opacity='.16'/%3E%3C/svg%3E");
+    linear-gradient(180deg, rgba(244, 244, 240, 0.86) 0%, rgba(226, 226, 222, 0.94) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='77' height='133' viewBox='0 0 77 133'%3E%3Cpath d='M38.5 0 77 66.5H0Z' fill='%23ffffff' fill-opacity='.32'/%3E%3Cpath d='M0 66.5h77L38.5 133Z' fill='%23c9c9c4' fill-opacity='.22'/%3E%3Cpath d='M0 0h38.5L0 66.5Z' fill='%23282828' fill-opacity='.05'/%3E%3Cpath d='M77 0v66.5L38.5 0Z' fill='%23888888' fill-opacity='.08'/%3E%3C/svg%3E");
   background-attachment: fixed;
   background-position: center, center top;
   background-size: 100% 100%, 77px 133px;
