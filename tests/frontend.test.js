@@ -35,6 +35,21 @@ test("uses the dark cat and one yellow hover color for every supported card", ()
   assert.doesNotMatch(css, /\.supported-list li:nth-child\(3n/);
 });
 
+test("shows a service-limit note on every supported platform card", () => {
+  assert.equal((html.match(/class="supported-note"/g) || []).length, 6);
+  for (const note of [
+    "不限速，单文件最大10G",
+    "免费5GB存储",
+    "文件&gt;500M不支持游客直接下载，需要付费",
+    "未认证单文件仅20M，团队认证单文件10G/总100G",
+    "mp4格式不支持分享",
+    "不支持个人版注册",
+  ]) {
+    assert.match(html, new RegExp(note));
+  }
+  assert.match(css, /\.supported-note\s*\{[^}]*font-size:\s*11px;[^}]*line-height:\s*1\.55;/s);
+});
+
 test("uses the three theme colors for process-circle hover states", () => {
   assert.match(css, /\.step:nth-child\(1\):hover \.step-mark\s*\{[^}]*background:\s*var\(--accent\);/s);
   assert.match(css, /\.step:nth-child\(2\):hover \.step-mark\s*\{[^}]*background:\s*var\(--yellow\);/s);
