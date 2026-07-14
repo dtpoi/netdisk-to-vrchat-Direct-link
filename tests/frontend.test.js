@@ -3,11 +3,13 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const root = new URL("../", import.meta.url);
-const [html, css, script, readme] = await Promise.all([
+const [html, css, script, readme, logo, favicon] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("assets/style.css", root), "utf8"),
   readFile(new URL("assets/app.js", root), "utf8"),
   readFile(new URL("README.md", root), "utf8"),
+  readFile(new URL("assets/downloadlogo.png", root)),
+  readFile(new URL("assets/favicon.png", root)),
 ]);
 
 test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
@@ -29,6 +31,22 @@ test("uses the dark cat and one yellow hover color for every supported card", ()
   assert.match(css, /\.supported-list li:hover\s*\{[^}]*background:\s*#ffe48f;/s);
   assert.match(css, /\.supported-list li:focus-within\s*\{[^}]*background:\s*#ffe48f;/s);
   assert.doesNotMatch(css, /\.supported-list li:nth-child\(3n/);
+});
+
+test("uses neutral gray cards instead of the former pink tint", () => {
+  assert.match(css, /--paper-light:\s*#fafaf7;/);
+  assert.match(css, /\.resolver-form\s*\{[^}]*background:\s*rgba\(250, 250, 247, 0\.96\);/s);
+  assert.doesNotMatch(css, /#fff9fb|255,\s*249,\s*251/i);
+});
+
+test("uses optimized logo and favicon assets", () => {
+  assert.equal(logo.readUInt32BE(16), 128);
+  assert.equal(logo.readUInt32BE(20), 128);
+  assert.equal(favicon.readUInt32BE(16), 64);
+  assert.equal(favicon.readUInt32BE(20), 64);
+  assert.equal((html.match(/src="\/assets\/downloadlogo\.png"/g) || []).length, 2);
+  assert.match(html, /rel="icon"[^>]*href="\/assets\/favicon\.png"/);
+  assert.match(css, /\.site-footer \.brand img\s*\{[^}]*filter:\s*invert\(1\);/s);
 });
 
 test("fades into the dark footer without the former triangle cutout", () => {
