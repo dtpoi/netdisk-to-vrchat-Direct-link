@@ -40,12 +40,12 @@ test("uses the dark cat and one yellow hover color for every supported card", ()
 test("shows a service-limit note on every supported platform card", () => {
   assert.equal((html.match(/class="supported-note"/g) || []).length, 6);
   for (const note of [
-    "不限速，单文件最大10G",
+    "不限速，单文件最大10G，14天过期",
     "免费5GB存储",
-    "文件&gt;500M不支持游客直接下载，需要付费",
+    "游客24小时，登录用户3天；文件&gt;500M不支持游客直接下载",
     "未认证单文件仅20M，团队认证单文件10G/总100G",
     "国内访问速度不稳定",
-    "大文件不支持游客下载",
+    "可永久，大文件不支持游客下载",
   ]) {
     assert.match(html, new RegExp(note));
   }
