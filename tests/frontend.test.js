@@ -3,13 +3,15 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const root = new URL("../", import.meta.url);
-const [html, css, script, readme, logo, favicon] = await Promise.all([
+const [html, css, script, readme, logo, favicon, appleTouchIcon, ogCard] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("assets/style.css", root), "utf8"),
   readFile(new URL("assets/app.js", root), "utf8"),
   readFile(new URL("README.md", root), "utf8"),
   readFile(new URL("assets/downloadlogo.png", root)),
   readFile(new URL("assets/favicon.png", root)),
+  readFile(new URL("assets/apple-touch-icon.png", root)),
+  readFile(new URL("assets/og-card.png", root)),
 ]);
 
 test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
@@ -70,6 +72,20 @@ test("uses optimized logo and favicon assets", () => {
   assert.equal((html.match(/src="\/assets\/downloadlogo\.png"/g) || []).length, 2);
   assert.match(html, /rel="icon"[^>]*href="\/assets\/favicon\.png"/);
   assert.match(css, /\.site-footer \.brand img\s*\{[^}]*filter:\s*invert\(1\);/s);
+});
+
+test("provides iOS home-screen and social sharing metadata", () => {
+  assert.equal(appleTouchIcon.readUInt32BE(16), 180);
+  assert.equal(appleTouchIcon.readUInt32BE(20), 180);
+  assert.equal(ogCard.readUInt32BE(16), 1200);
+  assert.equal(ogCard.readUInt32BE(20), 630);
+  assert.match(html, /rel="apple-touch-icon" sizes="180x180" href="\/assets\/apple-touch-icon\.png"/);
+  assert.match(html, /name="apple-mobile-web-app-title" content="直链解析"/);
+  assert.match(html, /property="og:image" content="https:\/\/api\.dtpoi\.cn\/assets\/og-card\.png"/);
+  assert.match(html, /property="og:image:width" content="1200"/);
+  assert.match(html, /property="og:image:height" content="630"/);
+  assert.match(html, /name="twitter:card" content="summary_large_image"/);
+  assert.match(html, /rel="canonical" href="https:\/\/api\.dtpoi\.cn\/"/);
 });
 
 test("shows right-aligned source and parser reference links beside the hero title", () => {
