@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="QQ闪传、iCloud、文叔叔、飞书、OneDrive 与小飞机网盘分享链接转下载直链。" />
+    <meta name="description" content="把 QQ闪传、iCloud、文叔叔、飞书云盘、OneDrive 和小飞机网盘的分享链接解析成下载直链。" />
     <meta name="application-name" content="直链解析" />
     <meta name="apple-mobile-web-app-title" content="直链解析" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -19,7 +19,7 @@
     <meta property="og:locale" content="zh_CN" />
     <meta property="og:site_name" content="直链解析" />
     <meta property="og:title" content="直链解析｜多网盘分享链接转下载直链" />
-    <meta property="og:description" content="支持 QQ闪传、iCloud、文叔叔、飞书、OneDrive 与小飞机网盘，并针对 VRChat 播放器优化链接与请求。" />
+    <meta property="og:description" content="六种网盘分享链接转下载直链，另提供适合 VRChat 播放器的 .mp4 地址。" />
     <meta property="og:url" content="https://api.dtpoi.cn/" />
     <meta property="og:image" content="https://api.dtpoi.cn/assets/og-card.png" />
     <meta property="og:image:secure_url" content="https://api.dtpoi.cn/assets/og-card.png" />
@@ -29,7 +29,7 @@
     <meta property="og:image:alt" content="直链解析：多网盘分享链接转下载直链" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="直链解析｜多网盘分享链接转下载直链" />
-    <meta name="twitter:description" content="支持六种网盘分享链接解析，并针对 VRChat 播放器优化。" />
+    <meta name="twitter:description" content="六种网盘分享链接转直链，也可生成 VRChat 播放地址。" />
     <meta name="twitter:image" content="https://api.dtpoi.cn/assets/og-card.png" />
     <meta name="twitter:image:alt" content="直链解析：多网盘分享链接转下载直链" />
     <title>直链解析</title>
@@ -90,8 +90,8 @@
 
         <div class="hero-grid">
           <div class="hero-copy motion-fade">
-            <p class="lead">把分享链接变成下载直链。</p>
-            <p class="sublead">支持六种分享平台，可填写提取码。本站不存储、不代理文件本体。</p>
+            <p class="lead">粘贴链接解析，即可获得直链地址。</p>
+            <p class="sublead">支持六种分享平台，可填入网盘提取码。仅对链接解析，本站不会存储文件。</p>
           </div>
 
           <div class="cat-scene motion-fade" aria-hidden="true">
@@ -131,7 +131,7 @@
                 inputmode="url"
                 autocomplete="off"
                 spellcheck="false"
-                placeholder="粘贴分享链接或完整分享文本"
+                placeholder="粘贴网盘链接，也可以直接粘贴整段分享文字"
                 aria-describedby="message"
                 required
               />
@@ -165,7 +165,7 @@
           <div class="smart-link-row">
             <div class="smart-link-content">
               <span>智能直链 / SMART URL</span>
-              <code id="smart-url">输入有效分享链接后自动生成</code>
+              <code id="smart-url">粘贴受支持的分享链接后生成</code>
             </div>
             <button id="copy-button" class="copy-link-button" type="button" disabled>
               <span>复制</span>
@@ -181,14 +181,14 @@
             <div class="vrchat-window-body">
               <div class="vrchat-link-content">
                 <span>VRChat 播放地址 / AVPRO URL</span>
-                <code id="vrchat-url">输入已支持的分享链接后自动生成</code>
+                <code id="vrchat-url">粘贴受支持的分享链接后生成</code>
               </div>
               <button id="copy-vrchat-button" class="vrchat-copy-button" type="button" disabled>
                 <span>复制地址</span>
                 <i aria-hidden="true"></i>
               </button>
             </div>
-            <p>六个平台均使用带 .mp4 后缀的入口，兼容 HEAD 探测；每次播放实时解析。</p>
+            <p>地址带 .mp4 后缀，支持 HEAD 探测。播放时会重新解析，避免使用过期直链。</p>
           </section>
           <div id="message" class="message" aria-live="polite"></div>
           <div id="direct-result" class="direct-result" hidden>
@@ -217,32 +217,32 @@
         <ul class="supported-list">
           <li class="reveal">
             <a href="https://nutty.qq.com/nutty/ssr/26797.html" target="_blank" rel="noopener noreferrer" aria-label="打开 QQ闪传介绍">
-              <span>01</span><strong>QQ闪传</strong><small>qfile.qq.com</small><p class="supported-note">不限速，单文件最大10G，14天过期</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>01</span><strong>QQ闪传</strong><small>qfile.qq.com</small><p class="supported-note">不限速；单文件最高 10 GB，14 天过期</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
           <li class="reveal">
             <a href="https://www.icloud.com.cn/iclouddrive/" target="_blank" rel="noopener noreferrer" aria-label="打开 iCloud Drive">
-              <span>02</span><strong>iCloud</strong><small>icloud.com.cn</small><p class="supported-note">免费5GB存储</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>02</span><strong>iCloud</strong><small>icloud.com.cn</small><p class="supported-note">免费账户含 5 GB 存储空间</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
           <li class="reveal">
             <a href="https://www.wenshushu.cn/" target="_blank" rel="noopener noreferrer" aria-label="打开文叔叔">
-              <span>03</span><strong>文叔叔</strong><small>wss.ink</small><p class="supported-note">游客24小时，登录用户3天；文件&gt;500M不支持游客直接下载</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>03</span><strong>文叔叔</strong><small>wss.ink</small><p class="supported-note">游客分享保留 24 小时，登录后保留 3 天；超过 500 MB 需付费下载</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
           <li class="reveal">
             <a href="https://www.feishu.cn/" target="_blank" rel="noopener noreferrer" aria-label="打开飞书云盘">
-              <span>04</span><strong>飞书云盘</strong><small>feishu.cn</small><p class="supported-note">未认证单文件仅20M，团队认证单文件10G/总100G</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>04</span><strong>飞书云盘</strong><small>feishu.cn</small><p class="supported-note">未认证：单文件 20 MB；团队认证：单文件 10 GB、总容量 100 GB</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
           <li class="reveal">
             <a href="https://onedrive.live.com/" target="_blank" rel="noopener noreferrer" aria-label="打开 OneDrive">
-              <span>05</span><strong>OneDrive</strong><small>1drv.ms</small><p class="supported-note">国内访问速度不稳定</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>05</span><strong>OneDrive</strong><small>1drv.ms</small><p class="supported-note">中国大陆访问速度不稳定</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
           <li class="reveal">
             <a href="https://www.feijipan.com/" target="_blank" rel="noopener noreferrer" aria-label="打开小飞机网盘">
-              <span>06</span><strong>小飞机网盘</strong><small>feijipan.com</small><p class="supported-note">可永久，大文件不支持游客下载</p><i class="supported-arrow" aria-hidden="true">↗</i>
+              <span>06</span><strong>小飞机网盘</strong><small>feijipan.com</small><p class="supported-note">分享可设为永久；游客无法下载大文件</p><i class="supported-arrow" aria-hidden="true">↗</i>
             </a>
           </li>
         </ul>
@@ -259,7 +259,7 @@
             <span class="step-index">01</span>
             <div>
               <h3>粘贴分享链接</h3>
-              <p>自动识别六种已支持平台，也可填写分享提取码。</p>
+              <p>识别平台和链接，必要时把提取码一起填上。</p>
             </div>
             <span class="step-mark">PASTE</span>
           </li>
@@ -267,7 +267,7 @@
             <span class="step-index">02</span>
             <div>
               <h3>边缘实时解析</h3>
-              <p>由 EdgeOne Function 向对应平台实时请求文件信息。</p>
+              <p>EdgeOne Function 会在请求时联系原平台，获取当前可用的文件地址。</p>
             </div>
             <span class="step-mark">RESOLVE</span>
           </li>
@@ -275,7 +275,7 @@
             <span class="step-index">03</span>
             <div>
               <h3>跳转文件直链</h3>
-              <p>多数平台直连文件服务；飞书由 EdgeOne 实时转发。</p>
+              <p>拿到直链后直接跳转；飞书文件由 EdgeOne 转发。</p>
             </div>
             <span class="step-mark">GO!</span>
           </li>
@@ -289,7 +289,7 @@
             <h2>ONE LINK.<br />ONE <em>CLICK.</em></h2>
           </div>
           <div class="api-example">
-            <span>智能直链格式</span>
+            <span>直链接口格式</span>
             <code>api.dtpoi.cn/do?url=分享链接</code>
           </div>
         </div>
@@ -301,7 +301,7 @@
         <img src="/assets/downloadlogo.png" width="128" height="128" alt="" />
       </a>
       <div class="footer-notes">
-        <p>文件内容由对应分享平台提供。本站不存储、不代理文件本体。</p>
+        <p>文件内容由对应分享平台提供。本站仅做解析链接，不保存文件也不存在代理传输行为。</p>
         <p class="footer-links">
           <span>解析代码参考：</span><a href="https://github.com/qaiu/netdisk-fast-download" target="_blank" rel="noopener noreferrer">qaiu/netdisk-fast-download</a>
           <i aria-hidden="true">/</i>
@@ -309,9 +309,6 @@
           <i aria-hidden="true">/</i>
           <span>问题反馈：</span><a href="mailto:dtpoi@foxmail.com">dtpoi@foxmail.com</a>
         </p>
-        <p>
-    本网站部分字体使用 <strong>阿里健康体 2.0</strong>（Alibaba Health Font 2.0）
-  </p>
       </div>
       <span class="footer-signature">API.DTPOI.CN / 2026</span>
     </footer>

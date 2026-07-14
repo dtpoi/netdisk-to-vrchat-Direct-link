@@ -127,21 +127,21 @@ function currentVrchatUrl() {
 
 function updateVrchatUrl() {
   const vrchatUrl = currentVrchatUrl();
-  vrchatUrlOutput.textContent = vrchatUrl || "输入已支持的分享链接后自动生成";
+  vrchatUrlOutput.textContent = vrchatUrl || "粘贴受支持的分享链接后生成";
   vrchatUrlOutput.dataset.ready = vrchatUrl ? "true" : "false";
   copyVrchatButton.disabled = !vrchatUrl;
 }
 
 function updateSmartUrl() {
   const smartUrl = currentSmartUrl();
-  smartUrlOutput.textContent = smartUrl || "输入有效分享链接后自动生成";
+  smartUrlOutput.textContent = smartUrl || "粘贴受支持的分享链接后生成";
   smartUrlOutput.dataset.ready = smartUrl ? "true" : "false";
   copyButton.disabled = !smartUrl;
 
   if (input.value.trim() && !smartUrl) {
-    showMessage("暂时支持下方列出的六种分享平台。", "info");
+    showMessage("这个链接暂不支持。可用平台见下方列表。", "info");
   } else if (smartUrl) {
-    showMessage(`已识别 ${detectShare().platform} 分享链接。`, "success");
+    showMessage(`${detectShare().platform} 链接已识别。`, "success");
   } else if (!input.value.trim()) {
     showMessage("");
   }
@@ -157,7 +157,7 @@ function showMessage(text, kind = "info") {
 function validate() {
   const share = detectShare();
   if (!share) {
-    showMessage("请输入有效的已支持网盘分享链接。", "error");
+    showMessage("请粘贴下方六个平台中的分享链接。", "error");
     input.focus();
     return null;
   }
@@ -272,7 +272,7 @@ form.addEventListener("submit", async (event) => {
 
   input.value = share.url;
   if (shouldDownload) playDownloadMotion();
-  showMessage(`正在向 ${share.platform} 请求文件直链…`);
+  showMessage(`正在解析 ${share.platform} 链接…`);
   hideDirectResult();
   parseOnlyButton.disabled = true;
   resolveButton.disabled = true;
@@ -300,12 +300,12 @@ form.addEventListener("submit", async (event) => {
     }
 
     showDirectResult(data.directUrl);
-    const transportHint = data.transport === "edge-stream" ? "，下载由 EdgeOne 实时转发" : "";
+    const transportHint = data.transport === "edge-stream" ? "，由 EdgeOne 实时转发" : "";
     if (shouldDownload) {
       startDownload(data.directUrl);
-      showMessage(`${data.service} 直链获取成功，已开始下载${transportHint}。`, "success");
+      showMessage(`${data.service} 直链已获取，下载已开始${transportHint}。`, "success");
     } else {
-      showMessage(`${data.service} 直链获取成功${transportHint}。`, "success");
+      showMessage(`${data.service} 直链已获取${transportHint}。`, "success");
     }
     const rect = resolveButton.getBoundingClientRect();
     createStamp(rect.left + rect.width / 2, rect.top, "READY");
@@ -372,7 +372,7 @@ copyDirectButton.addEventListener("click", async () => {
   if (!directUrl) return;
   try {
     await navigator.clipboard.writeText(directUrl);
-    showMessage("获取到的直链已复制。", "success");
+    showMessage("直链已复制。", "success");
   } catch {
     const range = document.createRange();
     const selection = window.getSelection();
