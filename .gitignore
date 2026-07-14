@@ -1,5 +1,5 @@
 node_modules/
-tests/
+.local-tests/
 .edgeone/
 .env
 .DS_Store
