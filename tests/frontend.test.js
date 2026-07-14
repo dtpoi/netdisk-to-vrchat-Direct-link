@@ -15,7 +15,21 @@ test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
     assert.match(css, new RegExp(color, "i"));
   }
   assert.match(css, /data:image\/svg\+xml/);
+  assert.match(css, /--paper:\s*#f4f4f0;/);
+  assert.doesNotMatch(css, /#ead7ee/i);
   assert.doesNotMatch(css, /cho-kaguyahime\.com\/assets/i);
+});
+
+test("uses the dark cat and one yellow hover color for every supported card", () => {
+  assert.match(css, /\.motion34-fill\s*\{\s*fill:\s*#282828;/);
+  assert.match(css, /\.supported-list li:hover\s*\{[^}]*background:\s*#ffe48f;/s);
+  assert.match(css, /\.supported-list li:focus-within\s*\{[^}]*background:\s*#ffe48f;/s);
+  assert.doesNotMatch(css, /\.supported-list li:nth-child\(3n/);
+});
+
+test("fades into the dark footer without the former triangle cutout", () => {
+  assert.match(css, /\.site-footer::before\s*\{[^}]*linear-gradient\(180deg,[^}]*var\(--ink\)/s);
+  assert.doesNotMatch(css, /\.site-footer::before\s*\{[^}]*conic-gradient/s);
 });
 
 test("provides an accessible animated back-to-top control", () => {

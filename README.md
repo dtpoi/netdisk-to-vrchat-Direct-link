@@ -2,7 +2,7 @@
 
 把网盘分享链接解析成临时下载地址，并给 VRChat / AVPro 提供一个带 `.mp4` 后缀、支持 `HEAD` 和跨域请求的固定入口。
 
-在线地址：[api.dtpoi.cn](https://api.dtpoi.cn)
+在线Demo：[api.dtpoi.cn](https://api.dtpoi.cn)
 
 ## 支持的平台
 
@@ -16,9 +16,9 @@
 | 移动云云空间 | `ecpan.cn` | 支持 | 302 跳转 | 支持 |
 
 文件夹分享会取根目录中第一个可下载文件。
-平台接口和风控随时可能调整，若遇到解析失败问题可以提交Issues
+平台接口和风控随时可能调整，若遇到解析失败问题可以提交Issues。
 
-[dtpoi@foxmail.com](mailto:dtpoi@foxmail.com)。
+问题反馈/联系：[dtpoi@foxmail.com](mailto:dtpoi@foxmail.com)
 
 ## 地址格式
 
