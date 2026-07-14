@@ -20,17 +20,25 @@ test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
   assert.match(css, /--paper:\s*#f4f4f0;/);
   assert.doesNotMatch(css, /#ead7ee/i);
   assert.doesNotMatch(css, /#cbc4f8/i);
-  assert.match(css, /rgba\(244, 244, 240, 0\.86\)/);
+  assert.match(css, /rgba\(244, 244, 240, 0\.8\)/);
+  assert.match(css, /rgba\(226, 226, 222, 0\.5\)/);
   assert.doesNotMatch(css, /203, 196, 248|245, 186, 191/);
   assert.doesNotMatch(css, /%23(?:ff635d|00c0c3|ffe48f)/i);
   assert.doesNotMatch(css, /cho-kaguyahime\.com\/assets/i);
 });
 
 test("uses the dark cat and one yellow hover color for every supported card", () => {
+  assert.match(html, /class="cat motion34-cat" viewBox="-18 0 349 280"/);
   assert.match(css, /\.motion34-fill\s*\{\s*fill:\s*#282828;/);
   assert.match(css, /\.supported-list li:hover\s*\{[^}]*background:\s*#ffe48f;/s);
   assert.match(css, /\.supported-list li:focus-within\s*\{[^}]*background:\s*#ffe48f;/s);
   assert.doesNotMatch(css, /\.supported-list li:nth-child\(3n/);
+});
+
+test("uses the three theme colors for process-circle hover states", () => {
+  assert.match(css, /\.step:nth-child\(1\):hover \.step-mark\s*\{[^}]*background:\s*var\(--accent\);/s);
+  assert.match(css, /\.step:nth-child\(2\):hover \.step-mark\s*\{[^}]*background:\s*var\(--yellow\);/s);
+  assert.match(css, /\.step:nth-child\(3\):hover \.step-mark\s*\{[^}]*background:\s*var\(--accent-alt\);/s);
 });
 
 test("uses neutral gray cards instead of the former pink tint", () => {
@@ -49,9 +57,17 @@ test("uses optimized logo and favicon assets", () => {
   assert.match(css, /\.site-footer \.brand img\s*\{[^}]*filter:\s*invert\(1\);/s);
 });
 
-test("fades into the dark footer without the former triangle cutout", () => {
-  assert.match(css, /\.site-footer::before\s*\{[^}]*linear-gradient\(180deg,[^}]*var\(--ink\)/s);
-  assert.doesNotMatch(css, /\.site-footer::before\s*\{[^}]*conic-gradient/s);
+test("shows right-aligned source and parser reference links beside the hero title", () => {
+  assert.match(html, /class="hero-source-links motion-fade"/);
+  assert.match(html, /class="github-logo"/);
+  assert.match(html, /https:\/\/github\.com\/dtpoi\/netdisk-to-vrchat-Direct-link/);
+  assert.match(html, /解析思路\/平台接口参考/);
+  assert.match(html, /https:\/\/github\.com\/qaiu\/netdisk-fast-download/);
+  assert.match(css, /\.hero-source-links\s*\{[^}]*justify-items:\s*end;[^}]*text-align:\s*right;/s);
+});
+
+test("cuts directly to the dark footer without a transition layer", () => {
+  assert.doesNotMatch(css, /\.site-footer::before/);
 });
 
 test("provides an accessible animated back-to-top control", () => {

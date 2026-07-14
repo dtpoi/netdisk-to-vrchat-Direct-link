@@ -49,7 +49,7 @@ body {
   overflow-x: hidden;
   background-color: #f4f4f0;
   background-image:
-    linear-gradient(180deg, rgba(244, 244, 240, 0.86) 0%, rgba(226, 226, 222, 0.94) 100%),
+    linear-gradient(180deg, rgba(244, 244, 240, 0.8) 0%, rgba(226, 226, 222, 0.5) 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='77' height='133' viewBox='0 0 77 133'%3E%3Cpath d='M38.5 0 77 66.5H0Z' fill='%23ffffff' fill-opacity='.32'/%3E%3Cpath d='M0 66.5h77L38.5 133Z' fill='%23c9c9c4' fill-opacity='.22'/%3E%3Cpath d='M0 0h38.5L0 66.5Z' fill='%23282828' fill-opacity='.05'/%3E%3Cpath d='M77 0v66.5L38.5 0Z' fill='%23888888' fill-opacity='.08'/%3E%3C/svg%3E");
   background-attachment: fixed;
   background-position: center, center top;
@@ -215,12 +215,72 @@ body.is-ready .curtain-line {
   line-height: 28px;
 }
 
-.hero-title {
+.hero-heading {
   position: relative;
   z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 32px;
+  align-items: center;
+}
+
+.hero-title {
+  position: relative;
   margin: -0.12em 0 -0.14em;
   padding: 0.18em 0 0.2em;
   overflow: hidden;
+}
+
+.hero-source-links {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  text-align: right;
+}
+
+.hero-source-link {
+  transition: color var(--fast) var(--ease-ui), transform var(--fast) var(--ease-ui);
+}
+
+.hero-source-link:hover {
+  color: var(--accent);
+  transform: translateX(-4px);
+}
+
+.hero-source-link-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.github-logo {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.hero-source-link-primary span,
+.hero-source-link-reference strong {
+  border-bottom: 1px solid currentColor;
+}
+
+.hero-source-link-reference {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 3px 6px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  line-height: 1.65;
+  letter-spacing: 0.04em;
+}
+
+.hero-source-link-reference strong {
+  color: var(--ink);
+  font-weight: 800;
 }
 
 .motion-title {
@@ -929,13 +989,28 @@ body.is-ready .motion-fade {
   font-family: var(--font-rounded);
   font-size: 13px;
   transform: rotate(8deg);
-  transition: transform 400ms var(--ease-soft), color 200ms ease-out, border-color 200ms ease-out;
+  transition: transform 400ms var(--ease-soft), color 200ms ease-out,
+    border-color 200ms ease-out, background-color 200ms ease-out;
 }
 
 .step:hover .step-mark {
-  border-color: var(--accent);
   color: var(--ink);
   transform: rotate(-6deg) scale(1.08);
+}
+
+.step:nth-child(1):hover .step-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.step:nth-child(2):hover .step-mark {
+  border-color: var(--yellow);
+  background: var(--yellow);
+}
+
+.step:nth-child(3):hover .step-mark {
+  border-color: var(--accent-alt);
+  background: var(--accent-alt);
 }
 
 .supported-section {
@@ -1148,17 +1223,6 @@ body.is-ready .motion-fade {
   padding: 46px max(32px, calc((100vw - 1320px) / 2));
   background: var(--ink);
   color: var(--white);
-}
-
-.site-footer::before {
-  position: absolute;
-  top: -96px;
-  right: 0;
-  left: 0;
-  height: 96px;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(40, 40, 40, 0) 0%, var(--ink) 100%);
-  content: "";
 }
 
 .site-footer .brand {
@@ -1397,11 +1461,16 @@ body.is-ready .motion-fade {
 
   .hero::before { display: none; }
   .hero-kicker { font-size: 7px; }
+  .hero-heading { grid-template-columns: 1fr; gap: 6px; }
   .motion-title {
     max-width: 100%;
     font-size: clamp(45px, 14.3vw, 76px);
     letter-spacing: -0.09em;
   }
+  .hero-source-links { gap: 6px; margin: 0 0 14px; }
+  .hero-source-link-primary { gap: 7px; font-size: 13px; }
+  .github-logo { width: 20px; height: 20px; }
+  .hero-source-link-reference { max-width: 240px; font-size: 8px; }
 
   .hero-grid {
     grid-template-columns: 1fr 150px;
@@ -1464,7 +1533,6 @@ body.is-ready .motion-fade {
   .api-copy h2 { font-size: 17vw; }
 
   .site-footer { grid-template-columns: 1fr auto; gap: 26px 16px; min-height: 230px; padding: 42px 18px 34px; }
-  .site-footer::before { top: -64px; height: 64px; }
   .site-footer .brand img { width: 54px; height: 54px; }
   .footer-notes { grid-column: 1 / -1; grid-row: 1; gap: 10px; text-align: left; }
   .footer-links { justify-content: flex-start; gap: 4px 6px; }
