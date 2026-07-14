@@ -8,8 +8,8 @@ const samples = [
   ["icloud", "https://www.icloud.com.cn/iclouddrive/0b0TIPcC3ya7V6OEnVk0XlvmQ"],
   ["wenshushu", "https://c.wss.ink/f/kdgrvdy9d3n"],
   ["feishu", "https://ecnof4grbkp0.feishu.cn/file/PL0VbtBkuoMGkPxd8f2cYWw7nFb?from=from_copylink"],
-  ["wps", "https://www.kdocs.cn/l/ck0azivLlDi3"],
-  ["ecpan", "https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside&data=81027a5c99af5b11ca004966c945cce6W9Bf2&isShare=1"],
+  ["onedrive", "https://1drv.ms/u/s!example?e=demo"],
+  ["feijipan", "https://share.feijipan.com/s/example"],
 ];
 
 function endpoint(shareUrl, password = "") {

@@ -42,8 +42,8 @@ test("shows a service-limit note on every supported platform card", () => {
     "免费5GB存储",
     "文件&gt;500M不支持游客直接下载，需要付费",
     "未认证单文件仅20M，团队认证单文件10G/总100G",
-    "mp4格式不支持分享",
-    "不支持个人版注册",
+    "国内访问速度不稳定",
+    "大文件不支持游客下载",
   ]) {
     assert.match(html, new RegExp(note));
   }
@@ -99,4 +99,13 @@ test("credits the parser and palette references and includes feedback mail", () 
     assert.match(content, /cho-kaguyahime\.com/);
     assert.match(content, /dtpoi@foxmail\.com/);
   }
+});
+
+test("lists OneDrive and Feijipan instead of WPS and Ecpan", () => {
+  for (const text of ["OneDrive", "1drv.ms", "小飞机网盘", "feijipan.com"]) {
+    assert.match(html, new RegExp(text, "i"));
+  }
+  assert.doesNotMatch(html, /WPS云文档|移动云云空间|kdocs\.cn|ecpan\.cn/);
+  assert.match(script, /platform:\s*"OneDrive"/);
+  assert.match(script, /platform:\s*"小飞机网盘"/);
 });

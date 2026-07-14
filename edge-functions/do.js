@@ -4,11 +4,12 @@ const ICLOUD_HOSTS = new Set(["www.icloud.com", "www.icloud.com.cn"]);
 const ICLOUD_SHARE_PATH_RE = /^\/iclouddrive\/([A-Za-z0-9_=-]+)$/;
 const WENSHUSHU_SHARE_PATH_RE = /^\/f\/([A-Za-z0-9]+)$/;
 const WENSHUSHU_HOST_RE = /^(?:[a-z0-9-]+\.)?(?:wss\.ink|wss\.show|wenshushu\.(?:cn|com)|wenxiaozhan\.(?:net|cn|com)|ws\d+\.cn|wss\d+\.cn|wss\.(?:email|cc|pet|zone))$/i;
-const KDOCS_HOST_RE = /^(?:[a-z0-9-]+\.)?kdocs\.cn$/i;
-const KDOCS_SHARE_PATH_RE = /^\/l\/([A-Za-z0-9_-]+)$/;
+const ONEDRIVE_SHORT_HOST = "1drv.ms";
+const ONEDRIVE_LIVE_HOST = "onedrive.live.com";
+const FEIJIPAN_HOSTS = new Set(["share.feijipan.com", "www.feijix.com"]);
+const FEIJIPAN_SHARE_PATH_RE = /^\/s\/([A-Za-z0-9_-]+)$/;
 const FEISHU_HOST_RE = /^([a-z0-9-]+)\.feishu\.cn$/i;
 const FEISHU_SHARE_PATH_RE = /^\/(file|drive\/folder)\/([A-Za-z0-9_-]+)$/;
-const ECPAN_HOST = "www.ecpan.cn";
 const FILESET_ID_RE = /fileset_id[^a-f0-9]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i;
 const TITLE_RE = /<title>([^<]*)<\/title>/i;
 
@@ -19,8 +20,9 @@ const QQ_BATCH_DOWNLOAD_API =
 const ICLOUD_RESOLVE_API =
   "https://ckdatabasews.icloud.com.cn/database/1/com.apple.cloudkit/production/public/records/resolve";
 const WENSHUSHU_API = "https://www.wenshushu.cn/ap/";
-const ECPAN_FILE_INFO_API = "https://www.ecpan.cn/drive/fileextoverrid.do";
-const ECPAN_DOWNLOAD_API = "https://www.ecpan.cn/drive/sharedownload.do";
+const ONEDRIVE_CONTENT_API = "https://my.microsoftpersonalcontent.com/_api/v2.0/shares";
+const FEIJIPAN_API = "https://api.feijipan.com/ws";
+const FEIJIPAN_AES_KEY = "dingHao-disk-app";
 
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36";
@@ -94,13 +96,22 @@ export function normalizeShare(value) {
       };
     }
 
-    const kdocsMatch = KDOCS_SHARE_PATH_RE.exec(url.pathname);
-    if (KDOCS_HOST_RE.test(url.hostname) && kdocsMatch) {
+    if (
+      url.hostname === ONEDRIVE_SHORT_HOST &&
+      url.pathname !== "/" &&
+      url.pathname.length <= 300
+    ) {
       return {
-        type: "wps",
-        key: kdocsMatch[1],
-        url: `https://www.kdocs.cn/l/${kdocsMatch[1]}`,
+        type: "onedrive",
+        url: `${url.origin}${url.pathname}${url.search}`,
       };
+    }
+
+    if (
+      url.hostname === ONEDRIVE_LIVE_HOST &&
+      (url.searchParams.has("resid") || url.searchParams.has("redeem"))
+    ) {
+      return { type: "onedrive", url: `${url.origin}${url.pathname}${url.search}` };
     }
 
     const feishuHostMatch = FEISHU_HOST_RE.exec(url.hostname);
@@ -115,18 +126,13 @@ export function normalizeShare(value) {
       };
     }
 
-    if (url.hostname === ECPAN_HOST) {
-      const fragmentQuery = url.hash.includes("?")
-        ? url.hash.slice(url.hash.indexOf("?") + 1)
-        : "";
-      const key = url.searchParams.get("data") || new URLSearchParams(fragmentQuery).get("data");
-      if (key && /^[A-Za-z0-9_-]+$/.test(key)) {
-        return {
-          type: "ecpan",
-          key,
-          url: `https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside&data=${encodeURIComponent(key)}&isShare=1`,
-        };
-      }
+    const feijipanMatch = FEIJIPAN_SHARE_PATH_RE.exec(url.pathname);
+    if (FEIJIPAN_HOSTS.has(url.hostname) && feijipanMatch) {
+      return {
+        type: "feijipan",
+        key: feijipanMatch[1],
+        url: `${url.origin}/s/${feijipanMatch[1]}`,
+      };
     }
   } catch {
     return null;
@@ -437,66 +443,231 @@ async function resolveWenshushu(key, password) {
   return ensureHttpsUrl(directUrl, "文叔叔");
 }
 
-async function resolveWps(share) {
-  const data = await fetchJson(
-    `https://www.kdocs.cn/api/office/file/${encodeURIComponent(share.key)}/download`,
-    {
+function oneDriveTarget(value) {
+  const url = new URL(value);
+  if (url.protocol !== "https:" || url.hostname !== ONEDRIVE_LIVE_HOST) {
+    throw new Error("OneDrive 分享跳转到了非预期地址");
+  }
+  const resid = url.searchParams.get("resid") || "";
+  const redeem = url.searchParams.get("redeem") || "";
+  const authkey = url.searchParams.get("authkey") || "";
+  if (!/^[A-Za-z0-9_-]+![A-Za-z0-9_-]+$/.test(resid)) {
+    throw new Error("OneDrive 分享缺少有效的文件标识");
+  }
+  return { resid, redeem, authkey };
+}
+
+export async function resolveOneDrive(share) {
+  let targetUrl = share.url;
+  if (new URL(share.url).hostname === ONEDRIVE_SHORT_HOST) {
+    const response = await fetch(share.url, {
+      ...FETCH_OPTIONS,
       headers: {
-        accept: "application/json",
-        referer: share.url,
+        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "user-agent": USER_AGENT,
       },
       redirect: "manual",
-    },
-    "WPS"
-  );
-  if (typeof data?.download_url !== "string" || !data.download_url) {
-    throw new Error(data?.error || data?.msg || "WPS 没有返回下载直链");
+    });
+    const location = response.headers.get("location");
+    if (!location || response.status < 300 || response.status >= 400) {
+      throw new Error(`OneDrive 短链接解析失败（HTTP ${response.status}）`);
+    }
+    targetUrl = new URL(location, share.url).toString();
   }
-  return ensureHttpsUrl(data.download_url, "WPS");
+
+  const { resid, redeem, authkey } = oneDriveTarget(targetUrl);
+  const driveId = resid.split("!", 1)[0].toLowerCase();
+
+  if (authkey) {
+    try {
+      const query = new URLSearchParams({ authkey });
+      const data = await fetchJson(
+        `https://api.onedrive.com/v1.0/drives/${driveId}/items/${encodeURIComponent(resid)}?${query}`,
+        { headers: { accept: "application/json", "user-agent": USER_AGENT } },
+        "OneDrive"
+      );
+      const directUrl = data?.["@content.downloadUrl"];
+      if (directUrl) return ensureHttpsUrl(directUrl, "OneDrive");
+    } catch {
+      // Newer shares use the redeem + Badger flow below.
+    }
+  }
+
+  if (!/^[A-Za-z0-9_-]+$/.test(redeem)) {
+    throw new Error("OneDrive 分享缺少下载授权参数");
+  }
+  const embedUrl = new URL("https://onedrive.live.com/embed");
+  embedUrl.search = new URLSearchParams({
+    id: resid,
+    resid,
+    cid: driveId,
+    redeem,
+    migratedtospo: "true",
+    embed: "1",
+  }).toString();
+  const embedResponse = await fetch(embedUrl, {
+    ...FETCH_OPTIONS,
+    headers: {
+      accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      referer: "https://onedrive.live.com/",
+      "user-agent": USER_AGENT,
+    },
+    redirect: "manual",
+  });
+  const badgerToken = /(?:^|[,;]\s*)BadgerAuth=([^;,\s]+)/i.exec(
+    embedResponse.headers.get("set-cookie") || ""
+  )?.[1];
+  if (!badgerToken) {
+    throw new Error(`OneDrive 下载授权获取失败（HTTP ${embedResponse.status}）`);
+  }
+
+  const data = await fetchJson(
+    `${ONEDRIVE_CONTENT_API}/u!${redeem}/driveItem?$select=name,content.downloadUrl`,
+    {
+      headers: {
+        accept: "application/json",
+        authorization: `Badger ${badgerToken}`,
+        "user-agent": USER_AGENT,
+      },
+    },
+    "OneDrive"
+  );
+  const directUrl = data?.["@content.downloadUrl"] || data?.content?.downloadUrl;
+  if (!directUrl) throw new Error("OneDrive 没有返回下载直链");
+  return ensureHttpsUrl(directUrl, "OneDrive");
 }
 
-async function resolveEcpan(key, password) {
-  const query = new URLSearchParams({
-    extractionCode: password,
-    chainUrlTemplate:
-      "https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside",
-    parentId: "-1",
-    data: key,
-  });
-  const commonHeaders = {
-    accept: "application/json",
-    referer: "https://www.ecpan.cn/web/",
-    "user-agent": USER_AGENT,
-  };
-  const infoData = await fetchJson(
-    `${ECPAN_FILE_INFO_API}?${query.toString()}`,
-    { headers: commonHeaders },
-    "移动云云空间"
+let feijipanCryptoKey;
+
+export async function encryptFeijipanValue(value) {
+  const webCrypto = globalThis.crypto;
+  if (!webCrypto?.subtle) throw new Error("当前边缘节点不支持小飞机加密算法");
+  const encoder = new TextEncoder();
+  feijipanCryptoKey ||= webCrypto.subtle.importKey(
+    "raw",
+    encoder.encode(FEIJIPAN_AES_KEY),
+    { name: "AES-CBC" },
+    false,
+    ["encrypt"]
   );
-  const fileInfo = infoData?.var?.chainFileInfo;
-  if (fileInfo?.errMesg) throw new Error(fileInfo.errMesg);
-  if (!fileInfo?.cloudpFile || !fileInfo?.shareId) {
-    throw new Error("移动云分享无效、已过期或提取码错误");
+  const key = await feijipanCryptoKey;
+  const input = encoder.encode(String(value));
+  const padding = 16 - (input.length % 16);
+  const padded = new Uint8Array(input.length + padding);
+  padded.set(input);
+  padded.fill(padding, input.length);
+
+  const output = [];
+  for (let offset = 0; offset < padded.length; offset += 16) {
+    const encrypted = new Uint8Array(
+      await webCrypto.subtle.encrypt(
+        { name: "AES-CBC", iv: new Uint8Array(16) },
+        key,
+        padded.slice(offset, offset + 16)
+      )
+    );
+    output.push(...encrypted.slice(0, 16));
+  }
+  return output.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function randomFeijipanUuid() {
+  const bytes = new Uint8Array(21);
+  globalThis.crypto.getRandomValues(bytes);
+  const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
+  return [...bytes].map((byte) => alphabet[byte & 63]).join("");
+}
+
+function feijipanHeaders(referer = "https://www.feijipan.com/") {
+  return {
+    accept: "application/json, text/plain, */*",
+    referer,
+    "user-agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  };
+}
+
+export async function resolveFeijipan(share, password) {
+  const uuid = randomFeijipanUuid();
+  const timestamp = await encryptFeijipanValue(Date.now());
+  const common = new URLSearchParams({
+    devType: "6",
+    devModel: "Chrome",
+    uuid,
+    extra: "2",
+    timestamp,
+  });
+  const vipResponse = await fetch(`${FEIJIPAN_API}/buy/vip/list?${common}`, {
+    ...FETCH_OPTIONS,
+    method: "POST",
+    headers: feijipanHeaders(),
+  });
+  if (!vipResponse.ok) {
+    throw new Error(`小飞机会员接口请求失败（HTTP ${vipResponse.status}）`);
   }
 
-  const downloadData = await postJson(
-    ECPAN_DOWNLOAD_API,
-    {
-      extCodeFlag: 0,
-      isIp: 0,
-      shareId: Number(fileInfo.shareId),
-      groupId: fileInfo.cloudpFile.groupId,
-      fileIdList: fileInfo.cloudpFileList,
-    },
-    { ...commonHeaders, "content-type": "application/json" },
-    "移动云云空间"
-  );
-  const directUrl = downloadData?.var?.downloadUrl;
-  if (typeof directUrl !== "string" || !directUrl) {
-    throw new Error("移动云没有返回下载直链");
+  const listQuery = new URLSearchParams(common);
+  for (const [name, value] of Object.entries({
+    shareId: share.key,
+    type: "0",
+    offset: "1",
+    limit: "60",
+  })) {
+    listQuery.set(name, value);
   }
-  return ensureHttpsUrl(directUrl, "移动云云空间");
+  if (password) listQuery.set("code", password);
+  const data = await fetchJson(
+    `${FEIJIPAN_API}/recommend/list?${listQuery}`,
+    { method: "POST", headers: feijipanHeaders() },
+    "小飞机网盘"
+  );
+  if (data?.code !== 200) {
+    throw new Error(data?.msg || "小飞机分享无效、已过期或提取码错误");
+  }
+  const shareInfo = data?.list?.[0];
+  if (!shareInfo) throw new Error("小飞机分享无效、已过期或提取码错误");
+  const file = Array.isArray(shareInfo.fileList)
+    ? shareInfo.fileList.find((item) => item?.fileType !== 2)
+    : null;
+  if (!file) throw new Error("小飞机分享中没有可直接下载的根目录文件");
+
+  const fileId = String(file.fileId || String(shareInfo.fileIds || "").split(",", 1)[0]);
+  if (!/^[A-Za-z0-9_-]+$/.test(fileId)) throw new Error("小飞机文件信息不完整");
+
+  const identities = [...new Set([shareInfo.userId, "null"].filter((value) => value != null).map(String))];
+  let lastMessage = "小飞机网盘没有返回下载直链";
+  for (const identity of identities) {
+    const now = Date.now();
+    const query = new URLSearchParams({
+      downloadId: await encryptFeijipanValue(`${fileId}|${identity}`),
+      enable: "1",
+      devType: "6",
+      uuid,
+      timestamp: await encryptFeijipanValue(now),
+      auth: await encryptFeijipanValue(`${fileId}|${now}`),
+      shareId: share.key,
+    });
+    const response = await fetch(`${FEIJIPAN_API}/file/redirect?${query}`, {
+      ...FETCH_OPTIONS,
+      headers: feijipanHeaders("https://www.feijix.com/"),
+      redirect: "manual",
+    });
+    const location = response.headers.get("location");
+    if (response.status >= 300 && response.status < 400 && location) {
+      return ensureHttpsUrl(new URL(location, FEIJIPAN_API).toString(), "小飞机网盘");
+    }
+    if (response.status === 403) {
+      lastMessage = "小飞机网盘拒绝了当前 EdgeOne 节点 IP";
+      continue;
+    }
+    try {
+      const errorData = JSON.parse(await response.text());
+      lastMessage = errorData?.msg || errorData?.message || lastMessage;
+    } catch {
+      lastMessage = `小飞机下载接口请求失败（HTTP ${response.status}）`;
+    }
+  }
+  throw new Error(lastMessage);
 }
 
 function addSetCookiesToJar(rawHeader, jar) {
@@ -620,14 +791,14 @@ export async function resolveShare(share, password) {
       directUrl: await resolveWenshushu(share.key, password),
     };
   }
-  if (share.type === "wps") {
-    return { mode: "redirect", service: "WPS云文档", directUrl: await resolveWps(share) };
+  if (share.type === "onedrive") {
+    return { mode: "redirect", service: "OneDrive", directUrl: await resolveOneDrive(share) };
   }
-  if (share.type === "ecpan") {
+  if (share.type === "feijipan") {
     return {
       mode: "redirect",
-      service: "移动云云空间",
-      directUrl: await resolveEcpan(share.key, password),
+      service: "小飞机网盘",
+      directUrl: await resolveFeijipan(share, password),
     };
   }
   return resolveFeishu(share);
@@ -682,7 +853,7 @@ export async function onRequestGet({ request }) {
   const share = normalizeShare(requestUrl.searchParams.get("url"));
   if (!share) {
     return errorResponse(
-      "请输入有效的 QQ闪传、iCloud、文叔叔、飞书、WPS 或移动云分享链接",
+      "请输入有效的 QQ闪传、iCloud、文叔叔、飞书、OneDrive 或小飞机分享链接",
       400
     );
   }

@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { extractShareUrl, normalizeShare, onRequestGet } from "../edge-functions/do.js";
+import {
+  encryptFeijipanValue,
+  extractShareUrl,
+  normalizeShare,
+  onRequestGet,
+  resolveFeijipan,
+  resolveOneDrive,
+} from "../edge-functions/do.js";
 
 test("rejects a non-qfile URL", async () => {
   const response = await onRequestGet({
@@ -43,10 +50,9 @@ test("normalizes supported QQ, iCloud, and Wenshushu links", () => {
     key: "kdg62lepgkl",
     url: "https://c.wss.ink/f/kdg62lepgkl",
   });
-  assert.deepEqual(normalizeShare("https://www.kdocs.cn/l/ck0azivLlDi3"), {
-    type: "wps",
-    key: "ck0azivLlDi3",
-    url: "https://www.kdocs.cn/l/ck0azivLlDi3",
+  assert.deepEqual(normalizeShare("https://1drv.ms/u/s!example?e=demo"), {
+    type: "onedrive",
+    url: "https://1drv.ms/u/s!example?e=demo",
   });
   assert.deepEqual(
     normalizeShare("https://kcncuknojm60.feishu.cn/file/VnCxbt35KoowKoxldO3c3C7VnMc"),
@@ -59,13 +65,11 @@ test("normalizes supported QQ, iCloud, and Wenshushu links", () => {
     }
   );
   assert.deepEqual(
-    normalizeShare(
-      "https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside&data=81027a5c99af5b11ca004966c945cce6W9Bf2&isShare=1"
-    ),
+    normalizeShare("https://share.feijipan.com/s/demoKey"),
     {
-      type: "ecpan",
-      key: "81027a5c99af5b11ca004966c945cce6W9Bf2",
-      url: "https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside&data=81027a5c99af5b11ca004966c945cce6W9Bf2&isShare=1",
+      type: "feijipan",
+      key: "demoKey",
+      url: "https://share.feijipan.com/s/demoKey",
     }
   );
 });
@@ -74,6 +78,105 @@ test("rejects lookalike and insecure share hosts", () => {
   assert.equal(normalizeShare("http://qfile.qq.com/q/xCHsh115ao"), null);
   assert.equal(normalizeShare("https://qfile.qq.com.example/q/xCHsh115ao"), null);
   assert.equal(normalizeShare("https://evilwss.ink.example/f/kdg62lepgkl"), null);
+  assert.equal(normalizeShare("https://1drv.ms.example/u/s!example"), null);
+  assert.equal(normalizeShare("https://share.feijipan.com.example/s/demoKey"), null);
+});
+
+test("matches the Feijipan AES-ECB values used by the reference parser", async () => {
+  assert.equal(
+    await encryptFeijipanValue("1720944000000"),
+    "43b15c9c473116618bf1b077ae29fabd"
+  );
+  assert.equal(
+    await encryptFeijipanValue("12345|67890"),
+    "1fc809c13e4aafdf4a55d84982dfc8dc"
+  );
+});
+
+test("resolves a OneDrive short share through the Badger content API", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (input) => {
+    const url = new URL(input);
+    calls.push(url.toString());
+    if (url.hostname === "1drv.ms") {
+      return new Response(null, {
+        status: 301,
+        headers: {
+          location:
+            "https://onedrive.live.com/:u:/g/personal/ABC/ITEM?resid=ABC!123&migratedtospo=true&redeem=cmVkZWVt",
+        },
+      });
+    }
+    if (url.hostname === "onedrive.live.com") {
+      return new Response(null, {
+        status: 302,
+        headers: { "set-cookie": "BadgerAuth=test-token; Path=/; Secure" },
+      });
+    }
+    if (url.hostname === "my.microsoftpersonalcontent.com") {
+      return Response.json({
+        name: "video.mp4",
+        "@content.downloadUrl": "https://media.example/onedrive/video.mp4",
+      });
+    }
+    throw new Error(`unexpected URL: ${url}`);
+  };
+
+  try {
+    assert.equal(
+      await resolveOneDrive({ type: "onedrive", url: "https://1drv.ms/u/s!example?e=demo" }),
+      "https://media.example/onedrive/video.mp4"
+    );
+    assert.equal(calls.length, 3);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("resolves a guest Feijipan file through its redirect API", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (input) => {
+    const url = new URL(input);
+    calls.push(url);
+    if (url.pathname.endsWith("/buy/vip/list")) return Response.json({ code: 200 });
+    if (url.pathname.endsWith("/recommend/list")) {
+      return Response.json({
+        code: 200,
+        list: [
+          {
+            fileIds: "98765",
+            userId: null,
+            fileList: [{ fileId: "98765", fileType: 1, fileSize: 204800 }],
+          },
+        ],
+      });
+    }
+    if (url.pathname.endsWith("/file/redirect")) {
+      return new Response(null, {
+        status: 302,
+        headers: { location: "https://media.example/feijipan/video.mp4" },
+      });
+    }
+    throw new Error(`unexpected URL: ${url}`);
+  };
+
+  try {
+    assert.equal(
+      await resolveFeijipan(
+        { type: "feijipan", key: "demoKey", url: "https://share.feijipan.com/s/demoKey" },
+        "7788"
+      ),
+      "https://media.example/feijipan/video.mp4"
+    );
+    assert.equal(calls.length, 3);
+    assert.equal(calls[1].searchParams.get("code"), "7788");
+    assert.equal(calls[2].searchParams.get("shareId"), "demoKey");
+    assert.notEqual(calls[2].searchParams.get("downloadId"), "98765|null");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("extracts a clean share URL from a complete sharing message", () => {

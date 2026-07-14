@@ -19,7 +19,9 @@ const backToTopButton = document.querySelector("#back-to-top");
 
 const ICLOUD_HOSTS = new Set(["www.icloud.com", "www.icloud.com.cn"]);
 const WENSHUSHU_HOST_RE = /^(?:[a-z0-9-]+\.)?(?:wss\.ink|wss\.show|wenshushu\.(?:cn|com)|wenxiaozhan\.(?:net|cn|com)|ws\d+\.cn|wss\d+\.cn|wss\.(?:email|cc|pet|zone))$/i;
-const KDOCS_HOST_RE = /^(?:[a-z0-9-]+\.)?kdocs\.cn$/i;
+const ONEDRIVE_SHORT_HOST = "1drv.ms";
+const ONEDRIVE_LIVE_HOST = "onedrive.live.com";
+const FEIJIPAN_HOSTS = new Set(["share.feijipan.com", "www.feijix.com"]);
 const FEISHU_HOST_RE = /^[a-z0-9-]+\.feishu\.cn$/i;
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -69,8 +71,14 @@ function detectShare(value = input.value) {
     ) {
       return { platform: "文叔叔", url: `${url.origin}${url.pathname}` };
     }
-    if (KDOCS_HOST_RE.test(url.hostname) && /^\/l\/[A-Za-z0-9_-]+$/.test(url.pathname)) {
-      return { platform: "WPS云文档", url: `https://www.kdocs.cn${url.pathname}` };
+    if (url.hostname === ONEDRIVE_SHORT_HOST && url.pathname !== "/") {
+      return { platform: "OneDrive", url: `${url.origin}${url.pathname}${url.search}` };
+    }
+    if (
+      url.hostname === ONEDRIVE_LIVE_HOST &&
+      (url.searchParams.has("resid") || url.searchParams.has("redeem"))
+    ) {
+      return { platform: "OneDrive", url: `${url.origin}${url.pathname}${url.search}` };
     }
     if (
       FEISHU_HOST_RE.test(url.hostname) &&
@@ -78,17 +86,11 @@ function detectShare(value = input.value) {
     ) {
       return { platform: "飞书云盘", url: `${url.origin}${url.pathname}` };
     }
-    if (url.hostname === "www.ecpan.cn") {
-      const fragmentQuery = url.hash.includes("?")
-        ? url.hash.slice(url.hash.indexOf("?") + 1)
-        : "";
-      const key = url.searchParams.get("data") || new URLSearchParams(fragmentQuery).get("data");
-      if (key && /^[A-Za-z0-9_-]+$/.test(key)) {
-        return {
-          platform: "移动云云空间",
-          url: `https://www.ecpan.cn/web/#/yunpanProxy?path=%2F%23%2Fdrive%2Foutside&data=${encodeURIComponent(key)}&isShare=1`,
-        };
-      }
+    if (
+      FEIJIPAN_HOSTS.has(url.hostname) &&
+      /^\/s\/[A-Za-z0-9_-]+$/.test(url.pathname)
+    ) {
+      return { platform: "小飞机网盘", url: `${url.origin}${url.pathname}` };
     }
   } catch {
     return null;
