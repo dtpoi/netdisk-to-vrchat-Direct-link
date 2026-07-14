@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const root = new URL("../", import.meta.url);
-const [html, css, script, readme, logo, favicon, appleTouchIcon, ogCard] = await Promise.all([
+const [html, css, script, readme, logo, favicon, appleTouchIcon, ogCard, font] = await Promise.all([
   readFile(new URL("index.html", root), "utf8"),
   readFile(new URL("assets/style.css", root), "utf8"),
   readFile(new URL("assets/app.js", root), "utf8"),
@@ -12,6 +12,7 @@ const [html, css, script, readme, logo, favicon, appleTouchIcon, ogCard] = await
   readFile(new URL("assets/favicon.png", root)),
   readFile(new URL("assets/apple-touch-icon.png", root)),
   readFile(new URL("assets/og-card.png", root)),
+  readFile(new URL("assets/fonts/AlibabaHealthFont2.0CN-85B.woff2", root)),
 ]);
 
 test("uses the Cho Kaguya-hime palette and a local triangle pattern", () => {
@@ -72,6 +73,13 @@ test("uses optimized logo and favicon assets", () => {
   assert.equal((html.match(/src="\/assets\/downloadlogo\.png"/g) || []).length, 2);
   assert.match(html, /rel="icon"[^>]*href="\/assets\/favicon\.png"/);
   assert.match(css, /\.site-footer \.brand img\s*\{[^}]*filter:\s*invert\(1\);/s);
+});
+
+test("loads the Alibaba Health font as WOFF2", () => {
+  assert.equal(font.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.match(css, /AlibabaHealthFont2\.0CN-85B\.woff2[^;]*format\("woff2"\)/);
+  assert.doesNotMatch(css, /AlibabaHealthFont2\.0CN-85B\.ttf|format\("truetype"\)/);
+  assert.match(html, /本网站部分字体使用 <strong>阿里健康体 2\.0<\/strong>（Alibaba Health Font 2\.0）/);
 });
 
 test("provides iOS home-screen and social sharing metadata", () => {
