@@ -291,10 +291,10 @@ body.is-ready .motion-fade {
 
 .motion34-cat {
   position: absolute;
-  right: 8%;
-  bottom: -78px;
-  width: 280px;
-  height: 232px;
+  right: 11%;
+  bottom: -68px;
+  width: 250px;
+  height: 216px;
   overflow: visible;
 }
 
@@ -1413,7 +1413,7 @@ body.is-ready .motion-fade {
   .sublead { max-width: 180px; font-size: 10px; line-height: 1.7; }
   .cat-scene { width: 150px; height: 150px; transform: scale(0.82); transform-origin: right bottom; }
   body.is-ready .cat-scene { transform: scale(0.82); }
-  .motion34-cat { right: -34%; bottom: -72px; width: 240px; height: 205px; }
+  .motion34-cat { right: 1px; bottom: -34px; width: 148px; height: 132px; }
 
   .resolver-form { margin-top: 12px; padding: 18px 15px 12px; box-shadow: 5px 5px 0 rgba(41, 41, 41, 0.12); }
   .resolver-form label small { display: none; }
