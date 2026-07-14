@@ -1,4 +1,4 @@
-# netdisk-to-vrchat-Direct-link
+# Netdisk-to-VRChat-Direct-link
 
 把网盘分享链接解析成临时下载地址，并给 VRChat / AVPro 提供一个带 `.mp4` 后缀、支持 `HEAD` 和跨域请求的固定入口。
 
