@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="QQ闪传、iCloud、文叔叔、飞书、WPS 与移动云分享链接转下载直链。" />
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex, nocache" />
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+    <meta name="theme-color" content="#cbc4f8" />
+    <meta name="color-scheme" content="light" />
+    <title>直链解析</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <div class="page-curtain" aria-hidden="true">
+      <span class="curtain-panel curtain-panel-left"></span>
+      <span class="curtain-panel curtain-panel-right"></span>
+      <span class="curtain-line"></span>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="直链解析首页">直链解析</a>
+      <a class="header-link" href="#resolver">开始解析</a>
+    </header>
+
+    <main>
+      <section class="hero" id="resolver">
+        <div class="hero-kicker motion-fade">
+          <span>MULTI CLOUD SHARE</span>
+          <span>DIRECT LINK TOOL</span>
+        </div>
+
+        <div class="hero-title" aria-label="直链解析">
+          <h1 class="motion-title" data-motion-text="直链解析">直链解析</h1>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy motion-fade">
+            <p class="lead">把分享链接变成下载直链。</p>
+            <p class="sublead">支持六种分享平台，可填写提取码。本站不存储、不代理文件本体。</p>
+          </div>
+
+          <div class="cat-scene motion-fade" aria-hidden="true">
+            <svg class="cat motion34-cat" viewBox="0 0 313 280" role="presentation">
+              <g class="motion34-body">
+                <ellipse class="motion34-fill" cx="156.5" cy="148.574" rx="156.5" ry="130.5"></ellipse>
+                <path
+                  class="motion34-fill motion34-ear-left"
+                  d="M124.418 31.2596C124.418 31.2596 92.1678 -1.56954 76.4519 1.63163C60.736 4.83279 67.8513 58.2844 67.8513 58.2844L124.418 31.2596Z"
+                ></path>
+                <path
+                  class="motion34-fill motion34-ear-right"
+                  d="M188.082 32.7613C188.082 32.7613 222.439 -2.65817 236.206 0.159634C249.972 2.97744 253.082 61 253.082 61L188.112 32.7916L188.082 32.7613Z"
+                ></path>
+                <path
+                  class="motion34-face"
+                  d="M185.593 91.0669C183.927 90.7184 182.261 91.7637 181.857 93.4562C181.705 94.1033 180.14 99.7281 171.103 99.7281C162.066 99.7281 160.955 94.3522 160.804 93.7051C160.602 92.3611 159.541 91.4153 158.229 91.1664C158.178 91.1664 158.128 91.1166 158.077 91.1166C156.411 90.7682 154.745 91.8135 154.341 93.5059C154.19 94.153 152.625 99.7779 143.587 99.7779C134.55 99.7779 133.439 94.4019 133.338 93.7548C133.086 92.0624 131.47 90.9175 129.754 91.1664C128.037 91.4153 126.826 93.0082 127.129 94.7006C127.734 98.5832 131.975 106 143.638 106C150.555 106 154.897 103.362 157.471 100.425C159.945 103.362 164.237 105.95 171.103 105.95C182.665 105.95 187.209 98.5832 188.016 94.7006C188.37 93.058 187.259 91.4153 185.593 91.0669Z"
+                ></path>
+                <path class="motion34-eye" d="M123.082 66.5C123.082 69.5376 120.172 72 116.582 72C112.992 72 110.082 69.5376 110.082 66.5C110.082 63.4624 112.992 61 116.582 61C120.172 61 123.082 63.4624 123.082 66.5Z"></path>
+                <path class="motion34-eye" d="M203.082 66.5C203.082 69.5376 200.396 72 197.082 72C193.768 72 191.082 69.5376 191.082 66.5C191.082 63.4624 193.768 61 197.082 61C200.396 61 203.082 63.4624 203.082 66.5Z"></path>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <form id="resolve-form" class="resolver-form motion-fade" action="/do" method="get" novalidate>
+          <label for="share-url">
+            <span>分享链接</span>
+            <small>6 SERVICES / OPTIONAL CODE</small>
+          </label>
+          <div class="input-row">
+            <div class="field">
+              <input
+                id="share-url"
+                name="url"
+                type="text"
+                inputmode="url"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="粘贴分享链接或完整分享文本"
+                aria-describedby="message"
+                required
+              />
+              <span class="field-line" aria-hidden="true"></span>
+            </div>
+            <div class="field password-field">
+              <input
+                id="share-password"
+                name="pwd"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                maxlength="64"
+                placeholder="提取码（可选）"
+                aria-label="提取码（可选）"
+              />
+              <span class="field-line" aria-hidden="true"></span>
+            </div>
+            <div class="resolver-actions">
+              <button class="parse-only-button" type="submit" name="action" value="parse">
+                <span class="button-label">仅解析</span>
+              </button>
+              <button class="resolve-button" type="submit" name="action" value="download">
+                <span class="button-label">解析并下载</span>
+                <svg class="download-icon" viewBox="0 0 1024 1024" aria-hidden="true" focusable="false">
+                  <path d="M709.487 501.104c-4.393-10.667-14.831-17.628-26.355-17.628H340.866c-11.524 0-21.962 6.959-26.355 17.628-4.45 10.61-1.997 22.932 6.161 31.089l171.133 171.133c5.59 5.533 12.892 8.328 20.193 8.328s14.603-2.796 20.193-8.328l171.133-171.133c8.101-8.157 10.553-20.48 6.161-31.089zM512 141.211c-31.489 0-57.044 25.499-57.044 57.044v285.222c0 31.546 25.556 57.044 57.044 57.044 31.546 0 57.044-25.499 57.044-57.044V198.255c0-31.546-25.499-57.044-57.044-57.044z m313.744 627.49H198.255c-31.489 0-57.044 25.499-57.044 57.045s25.556 57.044 57.044 57.044h627.489c31.546 0 57.044-25.499 57.044-57.044s-25.499-57.045-57.044-57.045z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="smart-link-row">
+            <div class="smart-link-content">
+              <span>智能直链 / SMART URL</span>
+              <code id="smart-url">输入有效分享链接后自动生成</code>
+            </div>
+            <button id="copy-button" class="copy-link-button" type="button" disabled>
+              <span>复制</span>
+              <i aria-hidden="true"></i>
+            </button>
+          </div>
+          <section class="vrchat-window" aria-labelledby="vrchat-window-title">
+            <header class="vrchat-window-bar">
+              <span class="vrchat-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <strong id="vrchat-window-title">VRCHAT PLAYER</strong>
+              <small>6 平台通用</small>
+            </header>
+            <div class="vrchat-window-body">
+              <div class="vrchat-link-content">
+                <span>VRChat 播放地址 / AVPRO URL</span>
+                <code id="vrchat-url">输入已支持的分享链接后自动生成</code>
+              </div>
+              <button id="copy-vrchat-button" class="vrchat-copy-button" type="button" disabled>
+                <span>复制地址</span>
+                <i aria-hidden="true"></i>
+              </button>
+            </div>
+            <p>六个平台均使用带 .mp4 后缀的入口，兼容 HEAD 探测；每次播放实时解析。</p>
+          </section>
+          <div id="message" class="message" aria-live="polite"></div>
+          <div id="direct-result" class="direct-result" hidden>
+            <div class="direct-result-content">
+              <span>已获取直链 / DIRECT URL</span>
+              <code id="direct-url"></code>
+            </div>
+            <div class="direct-result-actions">
+              <button id="copy-direct-button" class="result-button" type="button">复制直链</button>
+              <a id="open-direct-link" class="result-button is-primary" href="#" target="_blank" rel="noreferrer">打开下载</a>
+            </div>
+          </div>
+        </form>
+
+        <a class="scroll-cue" href="#supported">
+          <span>SCROLL</span>
+          <i></i>
+        </a>
+      </section>
+
+      <section class="supported-section" id="supported" aria-labelledby="supported-title">
+        <header class="supported-heading reveal">
+          <span class="section-index">01 / SUPPORTED</span>
+          <h2 id="supported-title">目前支持的<br />直链网盘</h2>
+        </header>
+        <ul class="supported-list">
+          <li class="reveal">
+            <a href="https://nutty.qq.com/nutty/ssr/26797.html" target="_blank" rel="noopener noreferrer" aria-label="打开 QQ闪传介绍">
+              <span>01</span><strong>QQ闪传</strong><small>qfile.qq.com</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="https://www.icloud.com.cn/iclouddrive/" target="_blank" rel="noopener noreferrer" aria-label="打开 iCloud Drive">
+              <span>02</span><strong>iCloud</strong><small>icloud.com.cn</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="https://www.wenshushu.cn/" target="_blank" rel="noopener noreferrer" aria-label="打开文叔叔">
+              <span>03</span><strong>文叔叔</strong><small>wss.ink</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="https://www.feishu.cn/" target="_blank" rel="noopener noreferrer" aria-label="打开飞书云盘">
+              <span>04</span><strong>飞书云盘</strong><small>feishu.cn</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="https://www.kdocs.cn/" target="_blank" rel="noopener noreferrer" aria-label="打开 WPS云文档">
+              <span>05</span><strong>WPS云文档</strong><small>kdocs.cn</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+          <li class="reveal">
+            <a href="https://www.ecpan.cn/web" target="_blank" rel="noopener noreferrer" aria-label="打开移动云云空间">
+              <span>06</span><strong>移动云云空间</strong><small>ecpan.cn</small><i class="supported-arrow" aria-hidden="true">↗</i>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section class="process" id="how-it-works">
+        <header class="section-heading reveal">
+          <span class="section-index">02 / PROCESS</span>
+          <h2>HOW IT<br /><em>WORKS.</em></h2>
+        </header>
+
+        <ol class="steps">
+          <li class="step reveal">
+            <span class="step-index">01</span>
+            <div>
+              <h3>粘贴分享链接</h3>
+              <p>自动识别六种已支持平台，也可填写分享提取码。</p>
+            </div>
+            <span class="step-mark">PASTE</span>
+          </li>
+          <li class="step reveal">
+            <span class="step-index">02</span>
+            <div>
+              <h3>边缘实时解析</h3>
+              <p>由 EdgeOne Function 向对应平台实时请求文件信息。</p>
+            </div>
+            <span class="step-mark">RESOLVE</span>
+          </li>
+          <li class="step reveal">
+            <span class="step-index">03</span>
+            <div>
+              <h3>跳转文件直链</h3>
+              <p>多数平台直连文件服务；飞书由 EdgeOne 实时转发。</p>
+            </div>
+            <span class="step-mark">GO!</span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="api-section">
+        <div class="api-card reveal">
+          <div class="api-copy">
+            <span class="section-index">03 / SMART URL</span>
+            <h2>ONE LINK.<br />ONE <em>CLICK.</em></h2>
+          </div>
+          <div class="api-example">
+            <span>智能直链格式</span>
+            <code>api.dtpoi.cn/do?url=分享链接</code>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="/">直链解析</a>
+      <div class="footer-notes">
+        <p>文件内容由对应分享平台提供。本站不存储、不代理文件本体。</p>
+        <p class="footer-links">
+          <span>解析代码参考：</span><a href="https://github.com/qaiu/netdisk-fast-download" target="_blank" rel="noopener noreferrer">qaiu/netdisk-fast-download</a>
+          <i aria-hidden="true">/</i>
+          <span>配色参考：</span><a href="https://www.cho-kaguyahime.com/" target="_blank" rel="noopener noreferrer">超时空辉夜姬动画官网</a>
+          <i aria-hidden="true">/</i>
+          <span>问题反馈：</span><a href="mailto:dtpoi@foxmail.com">dtpoi@foxmail.com</a>
+        </p>
+        <p>
+    本网站使用 <strong>阿里健康体 2.0</strong>（Alibaba Health Font 2.0）字体<br>
+    该字体面向全社会永久免费商用（包括个人网站）。<br>
+    字体文件来自官方渠道下载，仅作自托管使用，未进行任何修改。
+  </p>
+      </div>
+      <span class="footer-signature">API.DTPOI.CN / 2026</span>
+    </footer>
+
+    <button id="back-to-top" class="back-to-top" type="button" aria-label="回到顶部">
+      <span class="back-to-top-label">TOP</span>
+      <span class="back-to-top-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" role="presentation"><path d="m5 14 7-7 7 7M12 7v11" /></svg>
+        <svg viewBox="0 0 24 24" role="presentation"><path d="m5 14 7-7 7 7M12 7v11" /></svg>
+      </span>
+    </button>
+
+    <div id="stamp-layer" class="stamp-layer" aria-hidden="true"></div>
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>

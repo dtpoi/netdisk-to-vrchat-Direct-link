@@ -1,0 +1,10 @@
+{
+  "name": "netdisk-to-vrchat-direct-link",
+  "version": "1.0.0",
+  "description": "六种网盘分享链接的 EdgeOne 直链解析与 VRChat 播放入口",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
